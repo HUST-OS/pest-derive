@@ -27,18 +27,20 @@ fn main() {
     if grammar_pest_path.exists() {
         let mut sha = Sha1::default();
 
-        let old_hash = File::open(&hash_path).ok().map(|mut file| {
-            let mut s = String::new();
-            file.read_to_string(&mut s).unwrap();
-            s
-        });
+        // 修改：不检查old_hash
+        // let old_hash = File::open(&hash_path).ok().map(|mut file| {
+        //     let mut s = String::new();
+        //     file.read_to_string(&mut s).unwrap();
+        //     s
+        // });
         let current_grammar = fs::read_to_string(grammar_pest_path).unwrap();
         sha.update(current_grammar.as_bytes());
         let current_hash = display_digest(&sha.finalize());
 
         // If `grammar.pest` has changed
         if !grammar_rs_path.exists()
-            || old_hash.as_ref().map(|it| it.trim()) != Some(current_hash.trim())
+        // 不检查hash是否修改，我们直接上传grammar.rs文件，以免造成不必要的问题
+          //  || old_hash.as_ref().map(|it| it.trim()) != Some(current_hash.trim())
         {
             println!("Bootstrapping `meta/src/grammar.rs`");
 
